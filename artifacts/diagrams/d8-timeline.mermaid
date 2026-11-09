@@ -1,0 +1,14 @@
+timeline
+    title Жизненный цикл устройства #01 и его схем данных
+    section Схема v1 (Базовая)
+        2024-01-01 : Регистрация устройства
+                   : Данные пишутся с schema_version = 1
+                   : payload содержит t и h
+    section Переход на v2
+        2024-03-15 : Обновление прошивки
+                   : Запись в device_schema_transitions
+                   : UPDATE devices SET current_schema_version = 2
+    section Схема v2 (Расширенная)
+        2024-03-16 : Новые данные пишутся с schema_version = 2
+                   : payload содержит t, h и pressure
+                   : Старые данные (v1) остаются валидными в БД

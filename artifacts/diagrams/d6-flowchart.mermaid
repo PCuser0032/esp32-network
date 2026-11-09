@@ -1,0 +1,32 @@
+flowchart TD
+    A["Сырая строка из UART:\nTLM 01 sensors 12:00:01 v1 25.5 61.8"] --> B{"CRC\nвалидна?"}
+    B -- Нет --> Z1["Лог: BAD_CRC\nСброс пакета"]
+    B -- Да --> C["Разбивка по пробелам"]
+    
+    C --> D{"topic в\nwhitelist?"}
+    D -- Нет --> Z2["Лог: UNKNOWN_TOPIC\nСброс пакета"]
+    D -- Да --> E{"device_id\nизвестен?"}
+    
+    E -- Нет --> Z3["Лог: UNKNOWN_DEVICE\nСброс пакета"]
+    E -- Да --> F{"schema_version\nсовпадает?"}
+    
+    F -- Нет --> Z4["Лог: SCHEMA_MISMATCH\nСброс пакета"]
+    F -- Да --> G{"кол-во полей\nверное?"}
+    
+    G -- Нет --> Z5["Лог: FIELD_COUNT_ERROR\nСброс пакета"]
+    G -- Да --> H["Конвертация типов\n(float, int)"]
+    
+    H --> I{"Типы\nвалидны?"}
+    I -- Нет --> Z6["Лог: TYPE_ERROR\nСброс пакета"]
+    I -- Да --> J["Формирование JSONB\n{temp: 25.5, hum: 61.8}"]
+    
+    J --> K["INSERT в telemetry"]
+    K --> L["UPDATE devices\nstatus='online'"]
+    L --> M["ACK в UART -> Хаб"]
+    
+    style Z1 fill:#f99,stroke:#333
+    style Z2 fill:#f99,stroke:#333
+    style Z3 fill:#f99,stroke:#333
+    style Z4 fill:#f99,stroke:#333
+    style Z5 fill:#f99,stroke:#333
+    style Z6 fill:#f99,stroke:#333

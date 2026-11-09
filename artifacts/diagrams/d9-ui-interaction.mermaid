@@ -1,0 +1,31 @@
+flowchart LR
+    subgraph Browser["Браузер (Любое устройство в сети)"]
+        direction TB
+        Dash["Дашборд\n(Мониторинг)"]
+        Cmd["Панель команд\n(Управление)"]
+        Admin["Админка\n(Устройства и Схемы)"]
+    end
+
+    subgraph Server["Raspberry Pi (FastAPI)"]
+        direction TB
+        App["Веб-сервер (FastAPI)\nРоутинг и рендер HTML"]
+        API["REST API\n/api/..."]
+    end
+
+    subgraph Backend["Фоновые процессы"]
+        Parser["Python-парсер\n(Читает UART)"]
+    end
+
+    DB[("PostgreSQL\n(SSOT)")]
+
+    Dash -- "HTTP GET" --> App
+    Cmd -- "HTTP POST" --> API
+    Admin -- "HTTP POST" --> API
+
+    App -- "SQL (SELECT)" --> DB
+    API -- "SQL (INSERT/UPDATE)" --> DB
+
+    Parser -- "SQL (INSERT)" --> DB
+    
+    classDef db fill:#f9f,stroke:#333,stroke-width:2px;
+    class DB db;

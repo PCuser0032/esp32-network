@@ -1,0 +1,33 @@
+flowchart LR
+    subgraph Field["Поле (Edge)"]
+        N1["ESP32 #01\nsensors v1"]
+        N2["ESP32 #02\nsensors v1"]
+        N3["ESP32 #03\nboiler v1"]
+        N4["... до 16 узлов"]
+    end
+
+    subgraph Edge["Шлюз (Gateway)"]
+        HUB["Концентратор ESP32\n(Асинхронный опрос)"]
+    end
+
+    subgraph Server["Сервер (RPi 4)"]
+        PARSER["Python-парсер\n(Stateless демон)"]
+        VALID["Валидатор\n(Schema Registry)"]
+        PG[("PostgreSQL\n(SSOT)")]
+        
+        UI["Веб-интерфейс\n(FastAPI / Node-RED)"]
+        ADMIN["Оператор / Админ"]
+    end
+
+    N1 -- "ESP-NOW" --> HUB
+    N2 -- "ESP-NOW" --> HUB
+    N3 -- "ESP-NOW" --> HUB
+    N4 -- "ESP-NOW" --> HUB
+    
+    HUB -- "UART\n(Фрейминг + CRC)" --> PARSER
+    PARSER --> VALID
+    VALID --> PG
+    
+    ADMIN --> UI
+    UI -- "SQL / API" --> PG
+    PARSER -. "UART (Команды)" .-> HUB

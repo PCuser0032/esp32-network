@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> Idle
+    
+    Idle --> PollingCycle: Таймер 60 сек истек
+    
+    state PollingCycle {
+        [*] --> SendRequests
+        SendRequests --> WaitResponses: Разослать 16 запросов\n(интервалом 10 мс)
+        
+        WaitResponses --> CheckTimeouts: Прием данных\nчерез Callback
+        
+        CheckTimeouts --> CheckTimeouts: Если узел не ответил\nза 50 мс -> OFFLINE
+        
+        CheckTimeouts --> CycleEnd: Все ответы получены\nИЛИ таймер цикла истек
+    }
+    
+    PollingCycle --> Idle: Ожидание следующей минуты
+    Idle --> [*]: Выключение

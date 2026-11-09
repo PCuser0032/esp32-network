@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    actor ADMIN as Оператор (UI)
+    participant DB as PostgreSQL
+    participant PARSER as Парсер (RPi)
+    participant HUB as Концентратор (ESP32)
+    participant NODE as Узел #01 (ESP32)
+
+    ADMIN->>DB: INSERT INTO commands (device_id='01', type='reboot', status='pending')
+    
+    PARSER->>DB: SELECT * FROM commands WHERE status='pending'
+    DB-->>PARSER: command_id=42, payload
+    
+    PARSER->>HUB: UART: CMD 01 reboot 42 [CRC]
+    HUB->>NODE: ESP-NOW: CMD 01 reboot 42
+    NODE->>NODE: Выполнить команду (перезагрузка)
+    
+    NODE-->>HUB: ESP-NOW: ACK 01 42
+    HUB->>PARSER: UART: ACK 01 42 [CRC]
+    
+    PARSER->>DB: UPDATE commands SET status='ack', ack_at=NOW() WHERE id=42
+    Note over DB: Статус обновлен, UI увидит успех

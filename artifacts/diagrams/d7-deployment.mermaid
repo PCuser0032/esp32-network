@@ -1,0 +1,35 @@
+flowchart TB
+    subgraph Site["Объект (Поле)"]
+        direction LR
+        subgraph Sensors["Датчики (до 16 шт.)"]
+            D1["ESP32-WROOM-32\n+ DHT22"]
+            D2["ESP32-WROOM-32\n+ DHT22"]
+            D3["ESP32-WROOM-32\n+ Реле"]
+        end
+        
+        subgraph HubBox["Щит управления"]
+            HUB["ESP32-WROOM-32\n(Концентратор)"]
+        end
+    end
+
+    subgraph ServerBox["Серверная (Raspberry Pi 4)"]
+        direction TB
+        RPI["Raspberry Pi 4 (Linux)"]
+        
+        subgraph Soft["Программный стек"]
+            direction LR
+            PY["Python 3.11\n(Парсер + systemd)"]
+            PG["PostgreSQL 16\n(База данных)"]
+            DASH["FastAPI / Node-RED\n(Веб-интерфейс)"]
+        end
+        
+        RPI --- Soft
+        PY --> PG
+        DASH --> PG
+    end
+
+    D1 -. "ESP-NOW 2.4 ГГц" .-> HUB
+    D2 -. "ESP-NOW 2.4 ГГц" .-> HUB
+    D3 -. "ESP-NOW 2.4 ГГц" .-> HUB
+    
+    HUB == "UART 115200 бод\n(Провод TX/RX/GND)" ==> RPI

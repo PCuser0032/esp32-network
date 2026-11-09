@@ -1,0 +1,75 @@
+erDiagram
+    device_types {
+        SERIAL type_id PK
+        VARCHAR type_name UK "например 'sensors'"
+        TEXT description
+    }
+    
+    schema_versions {
+        SERIAL schema_id PK
+        INT type_id FK
+        INT version
+        JSONB field_definitions
+        BOOLEAN is_active
+    }
+    
+    devices {
+        VARCHAR device_id PK "MAC или '01'"
+        INT type_id FK
+        INT current_schema_version
+        VARCHAR status "online|offline|maintenance"
+        TIMESTAMPTZ last_seen_at
+    }
+    
+    topic_mappings {
+        VARCHAR topic_name PK "то что шлет ESP32"
+        INT type_id FK
+        BOOLEAN is_active
+    }
+    
+    telemetry {
+        BIGSERIAL id PK
+        VARCHAR device_id FK
+        VARCHAR device_type "денормализация"
+        INT schema_version "историческая версия"
+        TIMESTAMPTZ ts "время измерения"
+        JSONB payload
+        TEXT raw_string
+    }
+    
+    commands {
+        BIGSERIAL command_id PK
+        VARCHAR device_id FK
+        VARCHAR command_type
+        JSONB payload
+        VARCHAR status "pending|sent|ack|failed"
+        TIMESTAMPTZ created_at
+    }
+    
+    device_schema_transitions {
+        BIGSERIAL transition_id PK
+        VARCHAR device_id FK
+        INT from_version
+        INT to_version
+        TIMESTAMPTZ transitioned_at
+        TEXT reason
+    }
+    
+    audit_log {
+        BIGSERIAL id PK
+        VARCHAR table_name
+        VARCHAR record_id
+        VARCHAR action
+        JSONB old_values
+        JSONB new_values
+        TIMESTAMPTZ changed_at
+    }
+
+    device_types ||--o{ schema_versions : "имеет версии"
+    device_types ||--o{ devices : "классифицирует"
+    device_types ||--o{ topic_mappings : "маршрутизируется в"
+    devices ||--o{ telemetry : "отправляет"
+    devices ||--o{ commands : "получает"
+    devices ||--o{ device_schema_transitions : "имеет переходы"
+    schema_versions ||--o{ telemetry : "интерпретирует"
+    schema_versions ||--o{ device_schema_transitions : "целевая версия"

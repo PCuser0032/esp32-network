@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    participant HUB as Концентратор (ESP32)
+    participant NODE as Узел #01 (ESP32)
+    participant PARSER as Парсер (RPi)
+    participant DB as PostgreSQL
+
+    HUB->>NODE: ESP-NOW: Запрос данных
+    NODE->>NODE: Считать датчики (t=25.5, h=61.8)
+    NODE-->>HUB: ESP-NOW: "TLM 01 sensors 12:00:01 v1 25.5 61.8 [CRC]"
+    HUB->>PARSER: UART: [0xAA] [Payload] [CRC16] [0x55]
+    
+    PARSER->>PARSER: Проверка CRC и распаковка UART-фрейма
+    PARSER->>DB: SELECT type_id FROM topic_mappings WHERE topic='sensors'
+    DB-->>PARSER: type_id=1 (is_active=true)
+    
+    PARSER->>DB: SELECT current_schema_version FROM devices WHERE device_id='01'
+    DB-->>PARSER: version=1
+    
+    PARSER->>DB: SELECT field_definitions FROM schema_versions WHERE type_id=1 AND version=1
+    DB-->>PARSER: [temperature, humidity]
+    
+    PARSER->>PARSER: Валидация кол-ва полей и типов
+    PARSER->>DB: INSERT INTO telemetry (payload='{"t":25.5,"h":61.8}')
+    PARSER->>DB: UPDATE devices SET last_seen_at=NOW(), status='online'
+    Note over DB: Триггер пишет событие в audit_log
