@@ -19,11 +19,15 @@
 
 ### 2.1. Компонентная схема
 
-![Компонентная схема системы](../diagrams/d2-components.mermaid)
+[Компонентная схема системы (Mermaid)](../diagrams/d2-components.mermaid)
+
+![Компонентная схема системы](../diagrams/png/d2-components.png)
 
 ### 2.2. Схема развертывания
 
-![Схема развертывания](../diagrams/d7-deployment.mermaid)
+[Схема развертывания (Mermaid)](../diagrams/d7-deployment.mermaid)
+
+![Схема развертывания](../diagrams/png/d7-deployment.png)
 
 ## 3. Протоколы и форматы данных (Прямой поток)
 
@@ -72,10 +76,16 @@ CMD 01 set_interval 30
 ### 3.4. Диаграммы последовательности
 
 **Поток телеметрии (сбор данных):**
-![Sequence: Поток телеметрии](../diagrams/d3-sequence-data-flow.mermaid)
+
+[Sequence: Поток телеметрии (Mermaid)](../diagrams/d3-sequence-data-flow.mermaid)
+
+![Sequence: Поток телеметрии](../diagrams/png/d3-sequence-data-flow.png)
 
 **Поток команд (управление):**
-![Sequence: Поток команд](../diagrams/d4-sequence-commands.mermaid)
+
+[Sequence: Поток команд (Mermaid)](../diagrams/d4-sequence-commands.mermaid)
+
+![Sequence: Поток команд](../diagrams/png/d4-sequence-commands.png)
 
 ## 4. База данных (Слой персистентности)
 
@@ -95,11 +105,15 @@ CMD 01 set_interval 30
 
 ### 4.1. ER-диаграмма базы данных
 
-![ER-диаграмма БД](../diagrams/d1-er.mermaid)
+[ER-диаграмма БД (Mermaid)](../diagrams/d1-er.mermaid)
+
+![ER-диаграмма БД](../diagrams/png/d1-er.png)
 
 ### 4.2. Жизненный цикл схем данных
 
-![Timeline версионирования](../diagrams/d8-timeline.mermaid)
+[Timeline версионирования (Mermaid)](../diagrams/d8-timeline.mermaid)
+
+![Timeline версионирования](../diagrams/png/d8-timeline.png)
 
 ## 5. Отказоустойчивость и алгоритм опроса (Asynchronous Polling)
 
@@ -114,11 +128,15 @@ CMD 01 set_interval 30
 
 ### 5.1. Конечный автомат концентратора
 
-![State Machine концентратора](../diagrams/d5-state-master-polling.mermaid)
+[State Machine концентратора (Mermaid)](../diagrams/d5-state-master-polling.mermaid)
+
+![State Machine концентратора](../diagrams/png/d5-state-master-polling.png)
 
 ### 5.2. Конвейер валидации данных
 
-![Flowchart валидации](../diagrams/d6-flowchart.mermaid)
+[Flowchart валидации (Mermaid)](../diagrams/d6-flowchart.mermaid)
+
+![Flowchart валидации](../diagrams/png/d6-flowchart.png)
 
 **Обработка сбоев (Failure Modes):**
 
@@ -136,7 +154,9 @@ CMD 01 set_interval 30
 
 **Преимущество:** UI можно закрыть, перезагрузить или открыть с другого компьютера в сети, не прерывая процесс сбора телеметрии. UI работает как «проекция» базы данных.
 
-![Взаимодействие UI и Бэкенда](../diagrams/d9-ui-interaction.mermaid)
+[Взаимодействие UI и Бэкенда (Mermaid)](../diagrams/d9-ui-interaction.mermaid)
+
+![Взаимодействие UI и Бэкенда](../diagrams/png/d9-ui-interaction.png)
 
 ### 6.2. Анализ латентности
 
@@ -157,7 +177,9 @@ CMD 01 set_interval 30
 
 ### 7.2. Карта экранов (Site Map)
 
-![Карта экранов UI](../diagrams/d10-screen-map.mermaid)
+[Карта экранов UI (Mermaid)](../diagrams/d10-screen-map.mermaid)
+
+![Карта экранов UI](../diagrams/png/d10-screen-map.png)
 
 ### 7.3. Экран истории (History Viewer)
 
