@@ -3,18 +3,18 @@ import serial
 import struct
 import sys
 import os
+import threading
+import socket
 from datetime import datetime
 
-# Импортируем наш репозиторий (убедитесь, что структура папок правильная)
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# НАСТРОЙКИ (замените COM-порт на ваш!)
 SERIAL_PORT = "COM4"
 BAUD_RATE = 115200
+TCP_PORT = 65432
 
 
 def calculate_crc16(data):
-    """Расчет CRC-16/CCITT-FALSE (идентично прошивке ESP32)"""
     crc = 0xFFFF
     for byte in data:
         crc ^= byte << 8
@@ -27,8 +27,41 @@ def calculate_crc16(data):
     return crc
 
 
+def send_command(ser, command_str):
+    """Формирует UART-фрейм и отправляет его в порт"""
+    payload_bytes = command_str.encode('ascii')
+    length = len(payload_bytes)
+    data_to_crc = bytes([length]) + payload_bytes
+    crc = calculate_crc16(data_to_crc)
+
+    frame = bytearray([0xAA, length])
+    frame.extend(payload_bytes)
+    frame.append((crc >> 8) & 0xFF)
+    frame.append(crc & 0xFF)
+    frame.append(0x55)
+
+    ser.write(frame)
+    print(f"\n[>>>] Отправлено в порт: {command_str}")
+
+
+def tcp_server_thread(ser):
+    """Фоновый сервер для приема команд от других программ (или скриптов)"""
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind(('127.0.0.1', TCP_PORT))
+    server.listen(1)
+    print(f"[TCP] Сервер команд запущен на 127.0.0.1:{TCP_PORT}")
+
+    while True:
+        conn, addr = server.accept()
+        data = conn.recv(1024)
+        if data:
+            cmd = data.decode('ascii').strip()
+            send_command(ser, cmd)
+        conn.close()
+
+
 def main():
-    # 1. Инициализация базы данных
     repo = get_repository(db_type="sqlite", db_path="iot.db")
     repo.init_db()
 
@@ -38,6 +71,10 @@ def main():
     except Exception as e:
         print(f"Ошибка открытия порта: {e}")
         return
+
+    # Запускаем TCP-сервер в фоне
+    t = threading.Thread(target=tcp_server_thread, args=(ser,), daemon=True)
+    t.start()
 
     buffer = bytearray()
     print("Ожидание данных... (Ctrl+C для выхода)\n")
@@ -73,32 +110,26 @@ def main():
                         if received_crc == calculated_crc:
                             payload_str = payload_bytes.decode(
                                 'ascii', errors='ignore')
-                            parts = payload_str.split()
 
-                            # Ожидаем: TLM <DEV_ID> <TOPIC> <TIME> <SCHEMA> <VAL_1> <VAL_2>
-                            if len(parts) >= 7 and parts[0] == "TLM":
-                                dev_id = parts[1]
-                                # Для MVP жестко задаем схему sensors v1
-                                try:
-                                    payload_dict = {
-                                        "temperature": float(parts[5]),
-                                        "humidity": float(parts[6])
-                                    }
-
-                                    # Сохраняем в БД через репозиторий
-                                    repo.save_telemetry(dev_id, payload_dict)
-
-                                    print(
-                                        f"[{datetime.now().strftime('%H:%M:%S')}] [+] DB Save OK | {dev_id} | {payload_dict}")
-                                except ValueError as e:
-                                    print(
-                                        f"[-] Ошибка парсинга значений: {e} | {payload_str}")
-                            else:
-                                print(
-                                    f"[-] Неизвестный формат строки: {payload_str}")
+                            if payload_str.startswith("ACK"):
+                                print(f"[<<<] Получен ACK: {payload_str}")
+                            elif payload_str.startswith("TLM"):
+                                parts = payload_str.split()
+                                if len(parts) >= 7:
+                                    dev_id = parts[1]
+                                    try:
+                                        payload_dict = {
+                                            "temperature": float(parts[5]),
+                                            "humidity": float(parts[6])
+                                        }
+                                        repo.save_telemetry(
+                                            dev_id, payload_dict)
+                                        print(
+                                            f"[{datetime.now().strftime('%H:%M:%S')}] [+] DB Save OK | {dev_id} | {payload_dict}")
+                                    except ValueError as e:
+                                        print(f"[-] Ошибка парсинга: {e}")
                         else:
-                            print(
-                                f"[-] Ошибка CRC! Ожидалось {calculated_crc:04X}, получено {received_crc:04X}")
+                            print(f"[-] Ошибка CRC!")
 
                         buffer = buffer[frame_size:]
     except KeyboardInterrupt:

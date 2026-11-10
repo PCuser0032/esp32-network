@@ -1,0 +1,26 @@
+[DB] SQLite initialized successfully (iot.db).
+Открываю порт COM4...
+Ожидание данных... (Ctrl+C для выхода)
+
+[TCP] Сервер команд запущен на 127.0.0.1:65432
+[20:41:41] [+] DB Save OK | 01 | {'temperature': 24.4, 'humidity': 61.1}
+[20:41:46] [+] DB Save OK | 01 | {'temperature': 24.6, 'humidity': 58.7}
+[20:41:51] [+] DB Save OK | 01 | {'temperature': 27.7, 'humidity': 68.0}
+[20:41:56] [+] DB Save OK | 01 | {'temperature': 25.8, 'humidity': 68.9}
+[20:42:01] [+] DB Save OK | 01 | {'temperature': 23.8, 'humidity': 51.3}
+[20:42:06] [+] DB Save OK | 01 | {'temperature': 21.8, 'humidity': 63.7}
+
+[>>>] Отправлено в порт: CMD 01 101 led 1000
+[<<<] Получен ACK: ACK 01 101 OK
+[20:42:11] [+] DB Save OK | 01 | {'temperature': 23.6, 'humidity': 64.4}
+
+[>>>] Отправлено в порт: CMD 01 101 led 3000
+[<<<] Получен ACK: ACK 01 101 OK
+[20:42:16] [+] DB Save OK | 01 | {'temperature': 23.1, 'humidity': 50.5}
+[20:42:21] [+] DB Save OK | 01 | {'temperature': 29.5, 'humidity': 66.4}
+[20:42:26] [+] DB Save OK | 01 | {'temperature': 27.6, 'humidity': 65.4}
+[20:42:31] [+] DB Save OK | 01 | {'temperature': 26.2, 'humidity': 56.5}
+[20:42:36] [+] DB Save OK | 01 | {'temperature': 29.4, 'humidity': 66.3}
+[20:42:41] [+] DB Save OK | 01 | {'temperature': 23.0, 'humidity': 67.6}
+
+Завершение работы...

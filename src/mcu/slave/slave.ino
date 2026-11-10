@@ -2,41 +2,74 @@
 #include <WiFi.h>
 #include <esp_mac.h>
 
+#define LED_PIN 2  // Указываем, что светодиод на GPIO 2
+
 // MAC-адрес Хаба (замените на свой!)
-uint8_t hubMac[] = {0x14, 0x33, 0x5C, 0x2F, 0xB8, 0xB8};
+uint8_t hubMac[] = { 0x14, 0x33, 0x5C, 0x2F, 0xB8, 0xB8 };
 
 const char* DEVICE_ID = "01";
 const char* TOPIC = "sensors";
 const char* SCHEMA = "v1";
 
-void OnDataRecv(const esp_now_recv_info_t* info, const uint8_t* incomingData, int len) {
-  String req = String((char*)incomingData).substring(0, len);
+// Переменные для неблокирующего мигания светодиодом
+bool isLedActive = false;
+unsigned long ledStartTime = 0;
+unsigned long ledDuration = 0;
 
-  if (req == "REQ") {
-    // ЗАГЛУШКА: Генерируем случайные данные (температура 20-30, влажность 40-70)
+void OnDataRecv(const esp_now_recv_info_t* info, const uint8_t* incomingData, int len) {
+  String msg = String((char*)incomingData).substring(0, len);
+
+  // 1. Обработка планового запроса телеметрии
+  if (msg == "REQ") {
     float mockTemp = random(200, 300) / 10.0;
     float mockHum = random(400, 700) / 10.0;
-
-    // Формируем Unix Timestamp (для MVP используем millis()/1000)
     unsigned long timestamp = millis() / 1000;
 
-    // Собираем строку по протоколу v1.1
     String payload = "TLM " + String(DEVICE_ID) + " " + String(TOPIC) + " " + String(timestamp) + " " + String(SCHEMA) + " " + String(mockTemp, 1) + " " + String(mockHum, 1);
 
     esp_now_send(hubMac, (uint8_t*)payload.c_str(), payload.length());
     Serial.println("TX: " + payload);
   }
+
+  // 2. Обработка внеплановой команды (CMD)
+  else if (msg.startsWith("CMD")) {
+    Serial.println("RX CMD: " + msg);
+
+    int space1 = msg.indexOf(' ');
+    int space2 = msg.indexOf(' ', space1 + 1);
+    int space3 = msg.indexOf(' ', space2 + 1);
+    int space4 = msg.indexOf(' ', space3 + 1);
+
+    if (space4 > 0) {
+      String cmdId = msg.substring(space2 + 1, space3);
+      String cmdType = msg.substring(space3 + 1, space4);
+      String arg = msg.substring(space4 + 1);
+
+      if (cmdType == "led") {
+        // НЕБЛОКИРУЮЩИЙ ЗАПУСК
+        ledDuration = arg.toInt();
+        ledStartTime = millis();
+        isLedActive = true;
+        digitalWrite(LED_PIN, HIGH);  // Включаем сразу
+
+        Serial.println("Action: LED ON for " + String(ledDuration) + " ms");
+
+        // Отправляем ACK СРАЗУ, как только приняли команду к исполнению
+        String ack = "ACK " + String(DEVICE_ID) + " " + cmdId + " OK";
+        esp_now_send(hubMac, (uint8_t*)ack.c_str(), ack.length());
+        Serial.println("TX: " + ack);
+      }
+    }
+  }
 }
 
 void setup() {
   Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);  // Изначально выключен
+
   WiFi.mode(WIFI_STA);
-
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
-    return;  // Останавливаем выполнение, если ESP-NOW не поднялся
-  }
-
+  esp_now_init();
   esp_now_register_recv_cb(OnDataRecv);
 
   esp_now_peer_info_t peerInfo = {};
@@ -51,5 +84,12 @@ void setup() {
 }
 
 void loop() {
-  delay(100);
+  // Неблокирующая проверка: не пора ли выключить светодиод?
+  if (isLedActive && (millis() - ledStartTime >= ledDuration)) {
+    digitalWrite(LED_PIN, LOW);
+    isLedActive = false;
+    Serial.println("Action: LED OFF");
+  }
+
+  delay(10);
 }

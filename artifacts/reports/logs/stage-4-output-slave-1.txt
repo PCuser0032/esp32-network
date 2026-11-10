@@ -1,0 +1,22 @@
+20:42:06.464 -> TX: TLM 01 sensors 51 v1 21.8 63.7
+20:42:07.551 -> RX CMD: CMD 01 101 led 1000
+20:42:07.551 -> Action: LED ON for 1000 ms
+20:42:07.551 -> TX: ACK 01 101 OK
+20:42:08.571 -> Action: LED OFF
+20:42:11.494 -> TX: TLM 01 sensors 56 v1 23.6 64.4
+20:42:16.290 -> RX CMD: CMD 01 101 led 3000
+20:42:16.290 -> Action: LED ON for 3000 ms
+20:42:16.290 -> TX: ACK 01 101 OK
+20:42:16.509 -> TX: TLM 01 sensors 61 v1 23.1 50.5
+20:42:19.276 -> Action: LED OFF
+20:42:21.481 -> TX: TLM 01 sensors 66 v1 29.5 66.4
+20:42:26.502 -> TX: TLM 01 sensors 71 v1 27.6 65.4
+20:42:31.506 -> TX: TLM 01 sensors 76 v1 26.2 56.5
+20:42:36.472 -> TX: TLM 01 sensors 81 v1 29.4 66.3
+20:42:41.475 -> TX: TLM 01 sensors 86 v1 23.0 67.6
+20:42:46.495 -> TX: TLM 01 sensors 91 v1 21.1 40.3
+20:42:51.501 -> TX: TLM 01 sensors 96 v1 29.8 50.1
+20:42:56.467 -> TX: TLM 01 sensors 101 v1 29.8 54.2
+20:43:01.497 -> TX: TLM 01 sensors 106 v1 26.5 62.9
+20:43:06.485 -> TX: TLM 01 sensors 111 v1 20.0 69.5
+20:43:11.498 -> TX: TLM 01 sensors 116 v1 27.7 58.9

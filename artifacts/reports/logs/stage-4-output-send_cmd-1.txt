@@ -1,0 +1,4 @@
+PS D:\projects\electronics\esp32-network\sandbox\stage-4\backend> python send_cmd.py "CMD 01 101 led 1000"
+[*] Команда отправлена бэкенду: CMD 01 101 led 1000
+PS D:\projects\electronics\esp32-network\sandbox\stage-4\backend> python send_cmd.py "CMD 01 101 led 3000"
+[*] Команда отправлена бэкенду: CMD 01 101 led 3000
