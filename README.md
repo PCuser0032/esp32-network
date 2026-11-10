@@ -42,8 +42,9 @@ esp32-network/
 Вся подробная документация находится в папке `artifacts/docs`:
 
 1.  **[Техническое задание](./artifacts/docs/technical-specification-source.md)** — исходные требования.
-2.  **[Архитектурная концепция](./artifacts/docs/architecture-and-design.md)** — детальное описание протоколов, схемы БД, алгоритмов отказоустойчивости и UI.
-3.  Все диаграммы (ER, Sequence, State, Deployment) находятся в **[папке diagrams](./artifacts/diagrams/)** в формате `.mermaid`.
+2.  **[Архитектурная концепция](./artifacts/docs/architecture-and-design.md)** — детальное описание архитектуры, схемы БД, алгоритмов отказоустойчивости и UI.
+3.  **[Спецификация протокола](./artifacts/docs/protocol-specification.md)** — контракт обмена данными (форматы строк, UART-фрейминг, логика парсинга).
+4.  Все диаграммы (ER, Sequence, State, Deployment) находятся в **[папке diagrams](./artifacts/diagrams/)** в формате `.mermaid`.
 
 ## ⚡ Быстрый старт (MVP)
 
