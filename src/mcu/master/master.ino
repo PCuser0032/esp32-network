@@ -47,19 +47,12 @@ void sendUartFrame(String payload) {
   frame[len + 3] = crc & 0xFF;         // CRC Low
   frame[len + 4] = 0x55;               // End
 
-  // Вывод в монитор порта в HEX (чтобы мы видели байты, а не кракозябры)
-  Serial.print("UART FRAME (HEX): ");
-  for (int i = 0; i < len + 5; i++) {
-    if (frame[i] < 16) Serial.print("0");
-    Serial.print(frame[i], HEX);
-    Serial.print(" ");
-  }
-  Serial.println();
+  // ОТПРАВЛЯЕМ РЕАЛЬНЫЕ БАЙТЫ В ПОРТ
+  Serial.write(frame, len + 5);
 }
 
 void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
   String payload = String((char *)incomingData).substring(0, len);
-  Serial.println("RX from Node: " + payload);
 
   // Упаковываем в UART
   sendUartFrame(payload);

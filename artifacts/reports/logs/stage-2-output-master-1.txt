@@ -1,0 +1,1 @@
+17:18:39.302 -> �TLM 01 sensors 82 v1 23.1 50.7�U�TLM 01 sensors 87 v1 20.9 58.0�RU�TLM 01 sensors 92 v1 22.9 67.0�!U�TLM 01 sensors 97 v1 26.5 42.1�U
