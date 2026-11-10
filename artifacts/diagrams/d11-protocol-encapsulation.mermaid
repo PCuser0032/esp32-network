@@ -1,0 +1,32 @@
+flowchart TD
+    subgraph L1 ["Уровень 1: Радиоканал (ESP-NOW)"]
+        direction LR
+        subgraph ESP_Service ["Служебные данные радио"]
+            ESP_H["Заголовки Wi-Fi<br/>(MAC, преамбула)"]
+        end
+        subgraph ESP_Payload ["Полезная нагрузка (до 250 байт)"]
+            STRING1["Строка: TLM 01 sensors 1714132801 v1 25.5 61.8"]
+        end
+        subgraph ESP_Trailer ["Хвост радио"]
+            ESP_CRC["Аппаратный CRC"]
+        end
+        ESP_Service --> ESP_Payload --> ESP_Trailer
+    end
+
+    subgraph L2 ["Уровень 2: Провод (UART)"]
+        direction LR
+        subgraph UART_Head ["Служебные байты кадра"]
+            START_B["0xAA (Старт)"]
+            LENGTH_B["Length (Длина)"]
+        end
+        subgraph UART_Payload ["Полезная нагрузка (Payload)"]
+            STRING2["Строка: TLM 01 sensors 1714132801 v1 25.5 61.8"]
+        end
+        subgraph UART_Tail ["Служебные байты кадра"]
+            UART_CRC["CRC-16/CCITT-FALSE"]
+            END_B["0x55 (Стоп)"]
+        end
+        UART_Head --> UART_Payload --> UART_Tail
+    end
+
+    L1 -. "Хаб распаковывает\nи упаковывает заново" .-> L2

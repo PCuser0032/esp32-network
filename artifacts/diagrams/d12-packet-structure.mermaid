@@ -1,0 +1,26 @@
+flowchart LR
+    subgraph ESP_String ["Структура пакета телеметрии (ESP-NOW)"]
+        direction LR
+        F1["TLM<br/>(Заголовок)"]
+        F2["01<br/>(DEV_ID)"]
+        F3["sensors<br/>(TOPIC)"]
+        F4["1714132801<br/>(TIMESTAMP)"]
+        F5["v1<br/>(SCHEMA)"]
+        F6["25.5<br/>(VAL_1)"]
+        F7["61.8<br/>(VAL_2)"]
+        
+        F1 --> F2 --> F3 --> F4 --> F5 --> F6 --> F7
+    end
+
+    subgraph UART_Frame ["Структура UART-кадра"]
+        direction LR
+        U1["0xAA<br/>(1 байт)"]
+        U2["LENGTH<br/>(1 байт)"]
+        U3["PAYLOAD_STRING<br/>(N байт)"]
+        U4["CRC16<br/>(2 байта)"]
+        U5["0x55<br/>(1 байт)"]
+        
+        U1 --> U2 --> U3 --> U4 --> U5
+    end
+
+    ESP_String -. "Вкладывается в U3" .-> UART_Frame
