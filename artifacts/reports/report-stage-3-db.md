@@ -28,14 +28,14 @@
 ### 3.2. Состояние таблицы `devices`
 
 При каждом новом пакете обновляется время `last_seen_at`, а статус устройства выставляется в `online`. Логика UPSERT работает корректно.
-_(Скриншот: artifacts/reports/logs/db-devices.png)_
+_(Скриншот: [artifacts/reports/logs/db-data-devices.png](./logs/db-data-devices.png))_
 
 ![Состояние таблицы `devices`](./logs/db-data-devices.png)
 
 ### 3.3. Состояние таблицы `telemetry`
 
 В таблицу записано 58 строк. Поле `payload` содержит валидный JSON, сформированный из входящей строки. Время записи (`ts`) фиксируется с точностью до микросекунд.
-_(Скриншот: artifacts/reports/logs/db-telemetry.png)_
+_(Скриншот: [artifacts/reports/logs/db-data-telemetry.png](./logs/db-data-telemetry.png))_
 
 ![Состояние таблицы `telemetry`](./logs/db-data-telemetry.png)
 
